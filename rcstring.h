@@ -7,25 +7,38 @@
 using namespace std;
 
 class rcstring{
-  struct rctext;
-  rctext* data;
-public:
-class Range{};
-class Cref;
-rcstring();
-rcstring(const char*);
-rcstring(const rcstring&);
-~rcstring();
-rcstring& operator=(const char*);
-rcstring& operator=(const rcstring&);
-rcstring& operator+=(const rcstring &);
-rcstring operator+(const rcstring &) const;
-friend ostream& operator<<(ostream&, const rcstring&);
-void check (unsigned int i) const;
-char read(unsigned int i) const;
-void write(unsigned int i, char c);
-char operator[](unsigned int i) const;
-Cref operator[](unsigned int i);
+  		struct rctext;
+  		rctext* data;
+	public:
+		class Range{};
+		class Cref;
+		rcstring();
+		rcstring(const char*);
+		rcstring(const rcstring&);
+		~rcstring();
+		rcstring& operator=(const char*);
+		rcstring& operator=(const rcstring&);
+		rcstring& operator+=(const rcstring &);
+		rcstring operator+(const rcstring &) const;
+		friend ostream& operator<<(ostream&, const rcstring&);
+		void check (unsigned int i) const;
+		char read(unsigned int i) const;
+		void write(unsigned int i, char c);
+		char operator[](unsigned int i) const;
+		Cref operator[](unsigned int i);
+rcstring& toLower();
+rcstring& Left(int n); 
+		//rcstring& toLower(rcstring& aa); 		
+
+
+/*int atoi(){
+			int i =0;
+			i = atoi(data->s);			
+
+			return i;
+		}*/
+
+	
 };
 
 struct rcstring::rctext
@@ -36,19 +49,23 @@ struct rcstring::rctext
 
   rctext(unsigned int nsize, const char* p)
   {
-    n=1;
+ cout << "struct rctextrctext(size *p)"<<endl;    
+	n=1;
     size=nsize;
     s=new char[size+1];
     strncpy(s,p,size);
     s[size]='\0';
   };
-  ~rctext()
+ 
+ ~rctext()
   {
     delete [] s;
   };
-  rctext* detach()
+  
+rctext* detach()
   {
-    if(n==1)
+cout << "struct rctext detach()"<<endl;     
+if(n==1)
       return this;
     rctext* t=new rctext(size, s);
     n--;
@@ -56,7 +73,8 @@ struct rcstring::rctext
   };
   void assign(unsigned int nsize, const char *p)
   {
-    if(size!=nsize)
+cout << "struct rctext assign(nsize *p)"<<endl;      
+if(size!=nsize)
     {
       char* ns=new char[nsize+1];
       size = nsize;
@@ -92,17 +110,17 @@ public:
     return *this;
   }
   rcstring::Cref& operator = (const Cref& ref)
-  {
+  {cout << "cref & op="<<endl; 
     return operator= ((char)ref);
   }
 };
 inline rcstring::rcstring()
-  {
+  {cout << "rcstring::rcstring()"<<endl;
     data = new rctext(0,"");
   }
 
 inline rcstring::rcstring(const rcstring& x)
-  {
+  {cout << "rcstring::rcstring(const rcstring& x)"<<endl;
     x.data->n++;
     data=x.data;
   }
@@ -113,7 +131,7 @@ inline rcstring::~rcstring()
 }
 
 rcstring& rcstring::operator=(const rcstring & x)
-{
+{cout << "operator=(const rcstring & x)"<<endl;
   x.data->n++;
   if(--data->n == 0)
     delete data;
@@ -122,12 +140,12 @@ rcstring& rcstring::operator=(const rcstring & x)
 }
 
 rcstring::rcstring(const char* s)
-{
+{cout << "rcstring(const char* s)"<<endl;
  data=new rctext(strlen(s),s);
 }
 
 rcstring& rcstring::operator=(const char* s)
-{
+{cout << "operator=(const char* s)"<<endl;
   if(data->n==1)
     data->assign(strlen(s),s);
   else
@@ -145,7 +163,7 @@ ostream& operator << (ostream& o, const rcstring& s)
 }
 
 rcstring& rcstring::operator+=(const rcstring & s)
-{
+{cout << "operator+=(const rcstring & s)"<<endl;
 unsigned int newsize=data->size+s.data->size;
 rctext *newdata=new rctext(newsize,data->s);
 strcat(newdata->s,s.data->s);
@@ -156,21 +174,21 @@ return *this;
 }
 
 rcstring rcstring::operator+(const rcstring & s) const
-{
+{cout << "operator+=(const rcstring & s)"<<endl;
   return rcstring(*this)+=s;
 }
 
 inline void rcstring::check (unsigned int i) const
-{
+{cout << " rcstring::check (unsigned int i) const"<<endl;
 if(data->size<=i)
   throw Range();
 }
 inline char rcstring::read(unsigned int i) const
-{
+{cout << "rcstring::read(unsigned int i) const"<<endl;
  return data->s[i];
 }
 inline void rcstring::write(unsigned int i, char c)
-{
+{cout << "rcstring::write(unsigned int i, char c)"<<endl;
   data = data->detach();
   data->s[i] = c;
 }
@@ -189,5 +207,57 @@ rcstring::Cref rcstring::operator[](unsigned int i)
   return Cref(*this,i);
 }
 
+/*
+rcstring& rcstring::toLower(rcstring& aa) {
+	int len = data->size;
+	int i =0;
+		for(i =0; i < len; i+= 1) {
+		char abc = aa[i];
+		abc = abc + 32;
+		aa[i] = abc;
+	}
+	
+	return aa;
+	
+}*/
+
+rcstring& rcstring::toLower() {
+	int len = data->size;
+	int i =0;
+		for(i =0; i < len; i+= 1) {
+		char abc = data->s[i];
+		abc = abc + 32;
+		data->s[i] = abc;
+	}
+	
+	return *this;
+	
+}
+
+rcstring& rcstring::Left(int n) {
+	unsigned int newsize= n;
+	rctext *newdata=new rctext(newsize,data->s);
+	strncpy(newdata->s, data->s, n);
+	if(--data->n==0)
+  delete data;
+data = newdata;
+
+return *this;
+	
+
+/*
+{cout << "operator+=(const rcstring & s)"<<endl;
+unsigned int newsize=data->size+s.data->size;
+rctext *newdata=new rctext(newsize,data->s);
+strcat(newdata->s,s.data->s);
+if(--data->n==0)
+  delete data;
+data = newdata;
+return *this;*/
+
+
+
+
+}
 
 #endif /* __RCSTRING_H__ */
